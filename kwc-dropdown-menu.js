@@ -89,7 +89,7 @@ class KwcDropdownMenu extends PolymerElement {
                 #dropdown-content .dropdown-item > .key:hover,
                 #dropdown-content .dropdown-item[selected] > .key {
                     color: black;
-                    background: var(--kwc-dropdown-menu-selected-background, --color-porcelain);
+                    background: var(--kwc-dropdown-menu-selected-background, var(--color-porcelain));
                 }
             </style>
             <span>[[label]]</span>
