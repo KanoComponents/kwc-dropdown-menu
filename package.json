@@ -1,0 +1,11 @@
+{
+  "name": "@kano/kwc-dropdown-menu",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@kano/kwc-style": "^3.0.0-beta.2",
+    "@polymer/iron-icon": "^3.0.0-pre.19",
+    "@polymer/polymer": "^3.0.2"
+  }
+}
