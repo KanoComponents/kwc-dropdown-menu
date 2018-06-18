@@ -95,7 +95,7 @@ class KwcDropdownMenu extends PolymerElement {
             <span>[[_computeLabel(_selectedIndex, label)]]</span>
             <div class="icon">${dropdownIcon}</div>
             <div id="dropdown-content">
-                <template is="dom-repeat" items="[[items]]">
+                <template is="dom-repeat" items="[[items]]" filter="[[isNotSelected(value)]]">
                     <div class="dropdown-item" on-click="_onItemClick" selected$="[[_isSelected(item, value)]]">
                         <div class="key">[[item.label]]</div>
                     </div>
@@ -124,7 +124,6 @@ class KwcDropdownMenu extends PolymerElement {
             },
             _selectedIndex: {
                 type: Number,
-                observer: '_selectedIndexChanged',
             },
         };
     }
@@ -139,6 +138,9 @@ class KwcDropdownMenu extends PolymerElement {
     _computeLabel(index, fallback) {
         const item = this.items[index];
         return item ? item.label : fallback;
+    }
+    isNotSelected(value) {
+        return item => item.value !== value;
     }
     _onClick(e) {
         this.toggle();
@@ -173,20 +175,20 @@ class KwcDropdownMenu extends PolymerElement {
     }
     _onItemClick(e) {
         const index = e.model.get('index');
+        const item = e.model.get('item');
         this.set('_selectedIndex', index);
+        this.set('value', item.value);
     }
-    _selectedIndexChanged() {
-        const item = this.items[this._selectedIndex];
-        this.set('value', item ? item.value : null);
-    }
-    _valueChanged() {
+    _findIndex(value) {
         for (let i = 0; i < this.items.length; i += 1) {
-            if (this.items[i].value === this.value) {
-                this._selectedIndex = i;
-                return;
+            if (this.items[i].value === value) {
+                return i;
             }
         }
-        this._selectedIndex = -1;
+        return -1;
+    }
+    _valueChanged() {
+        this._selectedIndex = this._findIndex(this.value);
     }
     _isSelected(item, value) {
         return item.value === value;
