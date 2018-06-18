@@ -92,7 +92,7 @@ class KwcDropdownMenu extends PolymerElement {
                     background: var(--kwc-dropdown-menu-selected-background, var(--color-porcelain));
                 }
             </style>
-            <span>[[label]]</span>
+            <span>[[_computeLabel(_selectedIndex, label)]]</span>
             <div class="icon">${dropdownIcon}</div>
             <div id="dropdown-content">
                 <template is="dom-repeat" items="[[items]]">
@@ -115,12 +115,17 @@ class KwcDropdownMenu extends PolymerElement {
             value: {
                 type: String,
                 notify: true,
+                observer: '_valueChanged',
             },
             opened: {
                 type: Boolean,
                 value: false,
                 observer: '_openedChanged',
-            }
+            },
+            _selectedIndex: {
+                type: Number,
+                observer: '_selectedIndexChanged',
+            },
         };
     }
     constructor() {
@@ -130,6 +135,10 @@ class KwcDropdownMenu extends PolymerElement {
     connectedCallback() {
         super.connectedCallback();
         this.addEventListener('click', this._onClick);
+    }
+    _computeLabel(index, fallback) {
+        const item = this.items[index];
+        return item ? item.label : fallback;
     }
     _onClick(e) {
         this.toggle();
@@ -163,8 +172,21 @@ class KwcDropdownMenu extends PolymerElement {
         this.opened = true;
     }
     _onItemClick(e) {
-        const item = e.model.get('item');
-        this.set('value', item.value);
+        const index = e.model.get('index');
+        this.set('_selectedIndex', index);
+    }
+    _selectedIndexChanged() {
+        const item = this.items[this._selectedIndex];
+        this.set('value', item ? item.value : null);
+    }
+    _valueChanged() {
+        for (let i = 0; i < this.items.length; i += 1) {
+            if (this.items[i].value === this.value) {
+                this._selectedIndex = i;
+                return;
+            }
+        }
+        this._selectedIndex = -1;
     }
     _isSelected(item, value) {
         return item.value === value;
